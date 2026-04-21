@@ -13,8 +13,19 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
 
+    [Header("Dash")]
+    public float dashForce = 15f;
+    public float dashCooldown = 1f;
+    private float lastDashTime = -10f;
+
+    [Header("Crouch")]
+    public float crouchSpeed = 2f;
+    public float crouchScaleY = 0.5f;
+    private bool isCrouching = false;
+    private Vector3 originalScale;
+
     [Header("Camera")]
-    public Transform cameraHolder; // Drag your CameraHolder here
+    public Transform cameraHolder;
 
     private Rigidbody rb;
     private bool isGrounded;
@@ -24,6 +35,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        originalScale = transform.localScale;
 
         if (groundCheck == null)
         {
@@ -45,10 +57,13 @@ public class PlayerMovement : MonoBehaviour
             jumpPressed = true;
     }
 
-    void FixedUpdate()
+    // Shift — dash
+    public void OnDash(InputValue value)
     {
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer, QueryTriggerInteraction.Ignore);
-        // Get camera-relative forward and right, flattened to the horizontal plane
+        if (!value.isPressed) return;
+        if (Time.time < lastDashTime + dashCooldown) return;
+
+        // Dash in the movement direction, or forward if standing still
         Vector3 forward = cameraHolder.forward;
         Vector3 right = cameraHolder.right;
         forward.y = 0f;
@@ -56,9 +71,42 @@ public class PlayerMovement : MonoBehaviour
         forward.Normalize();
         right.Normalize();
 
-        // Move relative to where the camera is looking
+        Vector3 dashDir = (forward * moveInput.y + right * moveInput.x).normalized;
+        if (dashDir == Vector3.zero) dashDir = forward;
+
+        rb.AddForce(dashDir * dashForce, ForceMode.Impulse);
+        lastDashTime = Time.time;
+    }
+
+    // Control — crouch
+    public void OnCrouch(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            isCrouching = !isCrouching;
+
+            if (isCrouching)
+                transform.localScale = new Vector3(originalScale.x, crouchScaleY, originalScale.z);
+            else
+                transform.localScale = originalScale;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckRadius, groundLayer, QueryTriggerInteraction.Ignore);
+
+        Vector3 forward = cameraHolder.forward;
+        Vector3 right = cameraHolder.right;
+        forward.y = 0f;
+        right.y = 0f;
+        forward.Normalize();
+        right.Normalize();
+
+        float speed = isCrouching ? crouchSpeed : moveSpeed;
+
         Vector3 moveDir = (forward * moveInput.y + right * moveInput.x).normalized;
-        Vector3 targetVelocity = moveDir * moveSpeed;
+        Vector3 targetVelocity = moveDir * speed;
         targetVelocity.y = rb.linearVelocity.y;
         rb.linearVelocity = targetVelocity;
 
