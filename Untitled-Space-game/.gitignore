@@ -49,6 +49,9 @@ publish/
 *.sln
 *.suo
 
+### Claude Code
+CLAUDE.md
+
 ### Windows
 # Windows thumbnail cache files
 Thumbs.db

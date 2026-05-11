@@ -879,6 +879,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3718075287706433946, guid: a4727a19bfd6b784bafeb86f4a3452e2, type: 3}
+      propertyPath: dashForce
+      value: 35
+      objectReference: {fileID: 0}
     - target: {fileID: 4087601938001288226, guid: a4727a19bfd6b784bafeb86f4a3452e2, type: 3}
       propertyPath: m_Name
       value: Player
