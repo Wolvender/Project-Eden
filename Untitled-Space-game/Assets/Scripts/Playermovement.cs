@@ -6,23 +6,19 @@ public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 5f;
-    public float acceleration = 15f;
 
     [Header("Sprinting")]
     public float sprintSpeed = 9f;
 
     [Header("Jumping")]
     public float jumpForce = 5f;
-    public float coyoteTime = 0.15f;
-    public float jumpBufferTime = 0.15f;
     public LayerMask groundLayer;
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
 
     [Header("Dash")]
-    public float dashForce = 3f;
+    public float dashForce = 15f;
     public float dashCooldown = 1f;
-    public float dashDuration = 0.3f;
 
     [Header("Crouch")]
     public float crouchSpeed = 2f;
@@ -61,9 +57,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isCrouching;
     private bool isSprinting;
     private bool isGrounded;
-
-    private float coyoteTimer;
-    private float jumpBufferTimer;
+    private bool jumpPressed;
 
     // Cached every frame to avoid recomputing in Update + FixedUpdate
     private bool isMoving;
@@ -72,9 +66,6 @@ public class PlayerMovement : MonoBehaviour
     private float bobTimer;
     private float lastDashTime = -10f;
     private float currentFov;
-
-    private bool isDashing;
-    private float dashTimer;
 
     // ── Lifecycle ──────────────────────────────────────────────────────────────
 
@@ -123,29 +114,6 @@ public class PlayerMovement : MonoBehaviour
             groundCheck.position, groundCheckRadius,
             groundLayer, QueryTriggerInteraction.Ignore);
 
-        // Coyote time: keep the jump window open briefly after leaving ground
-        if (isGrounded)
-            coyoteTimer = coyoteTime;
-        else
-            coyoteTimer -= Time.fixedDeltaTime;
-
-        // Jump buffer: honour a jump press that arrived slightly before landing
-        jumpBufferTimer -= Time.fixedDeltaTime;
-        if (jumpBufferTimer > 0f && coyoteTimer > 0f)
-        {
-            rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            jumpBufferTimer = 0f;
-            coyoteTimer = 0f;
-        }
-
-        // Tick dash window
-        if (isDashing)
-        {
-            dashTimer -= Time.fixedDeltaTime;
-            if (dashTimer <= 0f) isDashing = false;
-        }
-
         // Build movement direction relative to camera
         Vector3 forward = cameraHolder.forward;
         Vector3 right = cameraHolder.right;
@@ -157,15 +125,22 @@ public class PlayerMovement : MonoBehaviour
                     : moveSpeed;
 
         Vector3 moveDir = (forward * moveInput.y + right * moveInput.x).normalized;
-        Vector3 targetHorizontal = moveDir * speed;
-        Vector3 currentHorizontal = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+        Vector3 targetVelocity = moveDir * speed;
 
-        if (!isDashing)
+        // Preserve vertical velocity so gravity and jumps aren't cancelled
+        targetVelocity.y = rb.linearVelocity.y;
+        rb.linearVelocity = targetVelocity;
+
+        if (jumpPressed)
         {
-            Vector3 newHorizontal = Vector3.MoveTowards(currentHorizontal, targetHorizontal, acceleration * Time.fixedDeltaTime);
-            rb.AddForce(newHorizontal - currentHorizontal, ForceMode.VelocityChange);
+            if (isGrounded)
+            {
+                // Zero out Y before impulse so jump height is always consistent
+                rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
+                rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            }
+            jumpPressed = false;
         }
-
     }
 
     // ── Visual effects ─────────────────────────────────────────────────────────
@@ -230,7 +205,7 @@ public class PlayerMovement : MonoBehaviour
     // ── Input callbacks ────────────────────────────────────────────────────────
 
     public void OnMove(InputValue value) => moveInput = value.Get<Vector2>();
-    public void OnJump(InputValue value) { if (value.isPressed) jumpBufferTimer = jumpBufferTime; }
+    public void OnJump(InputValue value) { if (value.isPressed) jumpPressed = true; }
     public void OnSprint(InputValue value)
     {
         if (!value.isPressed) return;
@@ -251,8 +226,6 @@ public class PlayerMovement : MonoBehaviour
 
         rb.AddForce(dashDir * dashForce, ForceMode.Impulse);
         lastDashTime = Time.time;
-        isDashing = true;
-        dashTimer = dashDuration;
 
         // Trigger the FOV spike
         dashFovTimer = dashFovDuration;
