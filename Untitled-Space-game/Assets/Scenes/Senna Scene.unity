@@ -286,7 +286,7 @@ MonoBehaviour:
     the player. React to what the player does in 1-2 short sentences. Be like GLaDOS:
     dry, observational, slightly disappointed, never actually helpful. Keep responses
     under 20 words.\t"
-  groqApiKey: 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
+  groqApiKey: 
   reactionCooldown: 3
   audioSource: {fileID: 0}
   subtitleText: {fileID: 0}
