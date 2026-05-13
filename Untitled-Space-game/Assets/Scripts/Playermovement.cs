@@ -231,12 +231,5 @@ public class PlayerMovement : MonoBehaviour
         dashFovTimer = dashFovDuration;
     }
 
-    public void OnCrouch(InputValue value)
-    {
-        if (!value.isPressed) return;
-        isCrouching = !isCrouching;
-        transform.localScale = isCrouching
-            ? new Vector3(originalScale.x, crouchScaleY, originalScale.z)
-            : originalScale;
-    }
+
 }

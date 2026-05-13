@@ -231,80 +231,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1654871902}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &134285061
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 134285064}
-  - component: {fileID: 134285063}
-  - component: {fileID: 134285062}
-  m_Layer: 0
-  m_Name: JhonAI
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!135 &134285062
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 134285061}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &134285063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 134285061}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d9f25bb814a3d24b80e62f5fdd4e09b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::JhonAI
-  systemPrompt: "You are John, an AI system aboard a space station who silently observes
-    the player. React to what the player does in 1-2 short sentences. Be like GLaDOS:
-    dry, observational, slightly disappointed, never actually helpful. Keep responses
-    under 20 words.\t"
-  groqApiKey: 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
-  reactionCooldown: 3
-  audioSource: {fileID: 0}
-  subtitleText: {fileID: 0}
---- !u!4 &134285064
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 134285061}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.47436, y: 1.041, z: -5.6803}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &566181931
 GameObject:
   m_ObjectHideFlags: 0
@@ -953,6 +879,10 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3718075287706433946, guid: a4727a19bfd6b784bafeb86f4a3452e2, type: 3}
+      propertyPath: dashForce
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 4087601938001288226, guid: a4727a19bfd6b784bafeb86f4a3452e2, type: 3}
       propertyPath: m_Name
       value: Player
@@ -970,4 +900,3 @@ SceneRoots:
   - {fileID: 8167729374506715895}
   - {fileID: 1654871902}
   - {fileID: 1550461116}
-  - {fileID: 134285064}
